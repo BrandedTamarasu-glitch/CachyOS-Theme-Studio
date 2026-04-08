@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CachyOS Theme Studio</title>
+    <link rel="stylesheet" href="./theme-studio/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="control-panel">
+        <div class="panel-header">
+          <p class="eyebrow">CachyOS Theme Studio</p>
+          <h1>Guided theme workflow</h1>
+          <p class="lede">
+            Build and apply desktop themes with preview, safety checks, and
+            rollback instead of jumping straight into raw token editing.
+          </p>
+        </div>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Step 1</p>
+            <h2>Start Here</h2>
+            <p>Choose a starting point and generate a first draft before you start tuning details.</p>
+          </div>
+
+          <div class="source-grid" id="sourceGrid">
+            <button id="startFromPreset" class="source-card" type="button">
+              <strong>Preset</strong>
+              <span>Begin from a curated starting palette.</span>
+            </button>
+            <button id="startFromDesktop" class="source-card secondary" type="button">
+              <strong>Current Desktop</strong>
+              <span>Use the current applied desktop theme as your base.</span>
+            </button>
+            <button id="startFromWallpaper" class="source-card secondary" type="button">
+              <strong>Wallpaper / Image</strong>
+              <span>Generate a first draft from a wallpaper or local image.</span>
+            </button>
+            <button id="startFromSaved" class="source-card secondary" type="button">
+              <strong>Saved Theme</strong>
+              <span>Jump into a saved theme from your local library.</span>
+            </button>
+            <button id="startFromImport" class="source-card secondary" type="button">
+              <strong>Import JSON</strong>
+              <span>Load a Theme Studio export and keep shaping it.</span>
+            </button>
+          </div>
+
+          <div id="startSourceStatus" class="workflow-summary" role="status" aria-live="polite">
+            Start from a preset to generate a first draft, then shape it before applying anything.
+          </div>
+
+          <input
+            id="wallpaperFile"
+            class="visually-hidden"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            tabindex="-1"
+            aria-hidden="true"
+          />
+
+          <div id="wallpaperControls" class="wallpaper-controls hidden" aria-live="polite" aria-hidden="true">
+            <div class="wallpaper-section">
+              <div class="wallpaper-section-head">
+                <div>
+                  <p class="library-heading">Image draft</p>
+                  <p id="wallpaperDraftHelp" class="wallpaper-note">
+                    Pick an image, choose the overall feel, then nudge the generated surfaces before you fine-tune.
+                  </p>
+                </div>
+                <button id="chooseWallpaperAgain" class="secondary" type="button">Choose Image</button>
+              </div>
+              <p id="wallpaperSourceState" class="wallpaper-source-state">
+                No image selected yet. Choose one to generate a first draft.
+              </p>
+            </div>
+
+            <div class="wallpaper-section">
+              <label class="field compact-field" for="wallpaperStyle">
+                <span>Overall feel</span>
+                <select id="wallpaperStyle" aria-describedby="wallpaperDraftHelp">
+                  <option value="balanced">Balanced</option>
+                  <option value="moody">Moody</option>
+                  <option value="punchy">Punchy</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="wallpaper-section">
+              <p class="library-heading">Tune the generated draft</p>
+              <div class="wallpaper-tuning" role="group" aria-label="Wallpaper tuning">
+                <label class="wallpaper-toggle">
+                  <input id="wallpaperBiasDark" type="checkbox" />
+                  <span>Favor dark tones</span>
+                </label>
+                <label class="wallpaper-toggle">
+                  <input id="wallpaperPreserveAccent" type="checkbox" checked />
+                  <span>Keep the strongest accent</span>
+                </label>
+                <label class="wallpaper-toggle">
+                  <input id="wallpaperSoftenNeutrals" type="checkbox" />
+                  <span>Soften neutral surfaces</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="wallpaper-section">
+              <p class="library-heading">Extracted palette</p>
+              <p class="wallpaper-note">These source colors drive the initial wallpaper-based draft.</p>
+              <div id="wallpaperSwatches" class="wallpaper-swatches">
+                <span class="wallpaper-swatch placeholder"></span>
+                <span class="wallpaper-swatch placeholder"></span>
+                <span class="wallpaper-swatch placeholder"></span>
+                <span class="wallpaper-swatch placeholder"></span>
+                <span class="wallpaper-swatch placeholder"></span>
+                <span class="wallpaper-swatch placeholder"></span>
+              </div>
+            </div>
+          </div>
+
+          <label class="field compact-field" for="presetSelect">
+            <span>Preset source</span>
+            <select id="presetSelect"></select>
+          </label>
+        </section>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Step 2</p>
+            <h2>Style</h2>
+            <p>
+              Start with broad mood and contrast controls. Open token editing only when you need exact values.
+            </p>
+          </div>
+
+          <div id="currentSource" class="workflow-summary" role="status" aria-live="polite">Source: Preset</div>
+
+          <div id="styleControls" class="style-controls">
+            <label class="field" for="semanticAccent">
+              <span>Accent</span>
+              <input id="semanticAccent" type="color" value="#4de2c5" />
+            </label>
+
+            <label class="field" for="semanticMood">
+              <span>Mood <output id="semanticMoodValue">Balanced</output></span>
+              <input id="semanticMood" type="range" min="-100" max="100" step="1" value="0" aria-describedby="semanticMoodValue" />
+            </label>
+
+            <label class="field" for="semanticContrast">
+              <span>Contrast <output id="semanticContrastValue">Balanced</output></span>
+              <input id="semanticContrast" type="range" min="-100" max="100" step="1" value="0" aria-describedby="semanticContrastValue" />
+            </label>
+
+            <label class="field" for="semanticTemperature">
+              <span>Temperature <output id="semanticTemperatureValue">Balanced</output></span>
+              <input id="semanticTemperature" type="range" min="-100" max="100" step="1" value="0" aria-describedby="semanticTemperatureValue" />
+            </label>
+
+            <label class="field" for="semanticBias">
+              <span>Theme bias</span>
+              <select id="semanticBias">
+                <option value="lighter">Lighter</option>
+                <option value="balanced" selected>Balanced</option>
+                <option value="darker">Darker</option>
+              </select>
+            </label>
+          </div>
+
+          <button
+            id="advancedEditorToggle"
+            class="secondary disclosure-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="advancedEditorPanel"
+          >
+            Advanced Token Editing
+          </button>
+
+          <div id="advancedEditorPanel" class="advanced-editor hidden" aria-hidden="true">
+            <div class="button-row tools-row">
+              <button id="resetTheme" class="secondary" type="button">Reset</button>
+              <button id="randomizeTheme" type="button">Randomize</button>
+            </div>
+            <div id="tokenFields" class="token-fields"></div>
+          </div>
+        </section>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Step 3</p>
+            <h2>Apply Review</h2>
+            <p>
+              Check readiness, expected file changes, and recovery path before you touch the live desktop.
+            </p>
+          </div>
+
+          <div id="desktopMode" class="desktop-mode">Web preview mode</div>
+
+          <div id="preflightBanner" class="preflight-banner preflight-banner-neutral" aria-live="polite">
+            <strong>Preview only</strong>
+            <span>Launch the desktop app and run a desktop check to verify apply readiness.</span>
+          </div>
+
+          <div id="environmentSummary" class="environment-summary">
+            Launch the Tauri app to enable direct desktop integration.
+          </div>
+
+          <div id="applyReview" class="review-grid">
+            <div class="review-section">
+              <p class="review-heading">Can I apply now?</p>
+              <div id="preflightReadiness" class="review-list">
+                <p class="library-empty">No desktop readiness summary loaded yet.</p>
+              </div>
+            </div>
+
+            <div class="review-section">
+              <p class="review-heading">This will change</p>
+              <div id="preflightImpact" class="review-list">
+                <p class="library-empty">Theme files have not been prepared yet.</p>
+              </div>
+            </div>
+
+            <div class="review-section">
+              <p class="review-heading">Needs attention</p>
+              <div id="preflightWarnings" class="review-list">
+                <p class="library-empty">Warnings and partial states will appear here.</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="integrationHealth" class="health-list">
+            <p class="library-empty">No integration health data loaded yet.</p>
+          </div>
+        </section>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Step 4</p>
+            <h2>Save &amp; Apply</h2>
+            <p>Name the theme, save a reusable snapshot, and decide whether to write files only or apply live.</p>
+          </div>
+
+          <label class="field" for="themeName">
+            <span>Theme name</span>
+            <input id="themeName" type="text" value="Solar Drift" />
+          </label>
+
+          <div class="button-row">
+            <button id="saveThemeVariant" class="secondary" type="button">Save Variant</button>
+            <button id="detectEnvironment" class="secondary" type="button">Refresh Desktop Check</button>
+            <button id="installTheme" class="secondary" type="button">Install Files</button>
+            <button id="applyTheme" type="button">Apply Theme</button>
+          </div>
+
+          <pre id="desktopStatus" class="desktop-status" role="status" aria-live="polite" aria-atomic="true">Desktop actions are idle. Run a desktop check before applying if your session changed.</pre>
+        </section>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Step 5</p>
+            <h2>Library &amp; History</h2>
+            <p>
+              Reopen saved work, compare snapshots, and recover from the most recent applied theme when needed.
+            </p>
+          </div>
+
+          <div class="button-row">
+            <button id="refreshLibrary" class="secondary" type="button">Refresh Library</button>
+            <button id="importLibraryTheme" class="secondary" type="button">Import JSON To Library</button>
+            <button id="rollbackTheme" class="secondary" type="button">Roll Back</button>
+            <button id="clearHistory" class="secondary" type="button">Clear Restore Points</button>
+            <button id="resetUiState" class="secondary" type="button">Reset App State</button>
+          </div>
+
+          <div class="library-tools">
+            <label class="field compact-field" for="librarySearch">
+              <span>Search saved themes</span>
+              <input id="librarySearch" type="search" placeholder="Search by name or safe name" />
+            </label>
+
+            <label class="field compact-field" for="librarySort">
+              <span>Sort</span>
+              <select id="librarySort">
+                <option value="favorites-first">Favorites first</option>
+                <option value="updated-desc">Recently updated</option>
+                <option value="updated-asc">Oldest updated</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+              </select>
+            </label>
+          </div>
+
+          <input
+            id="libraryImportFile"
+            class="visually-hidden"
+            type="file"
+            accept="application/json,.json"
+            tabindex="-1"
+            aria-hidden="true"
+          />
+
+          <div class="library-grid">
+            <div>
+              <p class="library-heading">Saved themes</p>
+              <div id="savedThemes" class="library-list">
+                <p class="library-empty">Desktop mode required.</p>
+              </div>
+            </div>
+
+            <div>
+              <p class="library-heading">Restore points</p>
+              <div id="themeHistory" class="library-list">
+                <p class="library-empty">No history loaded.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-card workflow-card">
+          <div class="section-title">
+            <p class="section-kicker">Export</p>
+            <h2>Generator</h2>
+            <p>
+              Export starter output for different theming targets from the same shared palette.
+            </p>
+          </div>
+
+          <label class="field" for="outputTarget">
+            <span>Output target</span>
+            <select id="outputTarget"></select>
+          </label>
+
+          <div id="outputHint" class="output-hint"></div>
+
+          <div class="button-row">
+            <button id="copyOutput" class="secondary">Copy Output</button>
+            <button id="downloadOutput">Download</button>
+          </div>
+
+          <textarea
+            id="exportOutput"
+            class="export-output"
+            spellcheck="false"
+            readonly
+          ></textarea>
+
+          <label class="field import-field">
+            <span>Import theme JSON</span>
+            <input id="importFile" type="file" accept="application/json,.json" />
+          </label>
+        </section>
+      </aside>
+
+      <main class="preview-panel">
+        <header class="preview-header">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2>Review the theme before applying it</h2>
+            <p class="preview-copy">
+              Switch surfaces, open compare mode, and use the summary strip to catch readability or hierarchy issues early.
+            </p>
+          </div>
+          <div class="preview-badges">
+            <span id="currentStageBadge" role="status" aria-live="polite">Start with a source</span>
+            <span id="previewHoverBadge" hidden>Library preview</span>
+          </div>
+        </header>
+
+        <div id="previewDecision" class="preview-decision preview-decision-balanced" aria-live="polite" aria-atomic="true">
+          <strong>Balanced preview</strong>
+          <span>This draft looks usable so far. Switch surfaces to pressure-test contrast and emphasis.</span>
+        </div>
+
+        <div id="qualitySummary" class="quality-summary" aria-live="polite">
+          <div class="quality-item">
+            <strong>Contrast</strong>
+            <span id="qualityContrast">Balanced</span>
+            <small id="qualityContrastNote">Text and panel separation are in a safe middle range.</small>
+          </div>
+          <div class="quality-item">
+            <strong>Accent</strong>
+            <span id="qualityAccent">Visible</span>
+            <small id="qualityAccentNote">Interactive highlights are noticeable without dominating the layout.</small>
+          </div>
+          <div class="quality-item">
+            <strong>Feel</strong>
+            <span id="qualityMood">Balanced</span>
+            <small id="qualityMoodNote">The overall palette energy feels measured rather than flat or loud.</small>
+          </div>
+          <div class="quality-item">
+            <strong>Bias</strong>
+            <span id="qualityBias">Balanced</span>
+            <small id="qualityBiasNote">The base surfaces are neither overly dark nor washed out.</small>
+          </div>
+        </div>
+
+        <div id="previewModeChips" class="preview-mode-chips" role="group" aria-label="Preview surfaces">
+          <button class="secondary preview-chip active" id="previewWindows" type="button" aria-pressed="true">Windows</button>
+          <button class="secondary preview-chip" id="previewWidgets" type="button" aria-pressed="false">Widgets</button>
+          <button class="secondary preview-chip" id="previewTerminal" type="button" aria-pressed="false">Terminal</button>
+          <button class="secondary preview-chip" id="previewNotifications" type="button" aria-pressed="false">Notifications</button>
+          <button class="secondary preview-chip" id="previewReadability" type="button" aria-pressed="false">Readability</button>
+        </div>
+
+        <div class="button-row compare-controls">
+          <button id="captureBaseline" class="secondary" type="button" aria-describedby="compareHint">Capture Baseline</button>
+          <button id="toggleCompare" class="secondary" type="button" aria-describedby="compareHint">Open Compare</button>
+        </div>
+
+        <p id="compareHint" class="compare-hint">
+          Capture a baseline before major edits, or use Library Compare to review saved themes side by side.
+        </p>
+
+        <section class="desktop-canvas" id="desktopCanvas" aria-hidden="true" data-preview-mode="windows">
+          <div class="top-bar">
+            <div class="brand-pill">
+              <span class="brand-dot"></span>
+              <span>CachyOS Session</span>
+            </div>
+            <div class="top-icons">
+              <span>NET</span>
+              <span>VOL</span>
+              <span>10:28</span>
+            </div>
+          </div>
+
+          <div class="desktop-grid">
+            <article class="window-card">
+              <div class="window-titlebar">
+                <span>Settings</span>
+                <div class="window-actions">
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                </div>
+              </div>
+              <div class="window-body">
+                <nav class="sidebar-nav">
+                  <span class="nav-chip active" aria-hidden="true">Appearance</span>
+                  <span class="nav-chip" aria-hidden="true">Shortcuts</span>
+                  <span class="nav-chip" aria-hidden="true">Display</span>
+                </nav>
+                <div class="surface-card">
+                  <h3>Accent preview</h3>
+                  <div class="slider-demo">
+                    <span>Transparency</span>
+                    <div class="slider-track">
+                      <div class="slider-thumb"></div>
+                    </div>
+                  </div>
+                  <div class="button-row">
+                    <span class="secondary" aria-hidden="true">Secondary</span>
+                    <span aria-hidden="true">Primary</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="widget-stack">
+              <div class="terminal-card">
+                <div class="terminal-header">konsole</div>
+                <pre><code>$ sudo cachyos-theme apply
+Applying global palette...
+Accent bound to widgets.
+Preview ready.</code></pre>
+              </div>
+
+              <div class="notification-card">
+                <p class="notification-title">Theme compiled</p>
+                <p class="notification-body">
+                  Window borders, active elements, and shell chrome are synced.
+                </p>
+              </div>
+
+              <div class="readability-card">
+                <p class="notification-title">Readability check</p>
+                <p class="readability-line">Primary text on panel should stay easy to scan.</p>
+                <p class="readability-line muted-line">Muted copy should stay secondary, not disappear.</p>
+                <div class="readability-tags">
+                  <span class="readability-tag">Selected</span>
+                  <span class="readability-tag secondary-tag">Disabled</span>
+                </div>
+              </div>
+
+              <div class="widget-swatch-grid" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <div class="dock-card">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="active"></span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="compareStage" class="compare-stage hidden" aria-hidden="true">
+          <article class="compare-pane">
+            <div class="compare-label">
+              <span id="compareBeforeLabel">Before</span>
+            </div>
+            <div class="desktop-canvas compare-canvas" id="baselineCanvas" aria-hidden="true">
+              <div class="top-bar">
+                <div class="brand-pill">
+                  <span class="brand-dot"></span>
+                  <span>Baseline Session</span>
+                </div>
+                <div class="top-icons">
+                  <span>NET</span>
+                  <span>VOL</span>
+                  <span>10:28</span>
+                </div>
+              </div>
+
+              <div class="desktop-grid">
+                <article class="window-card">
+                  <div class="window-titlebar">
+                    <span>Settings</span>
+                    <div class="window-actions">
+                      <i></i>
+                      <i></i>
+                      <i></i>
+                    </div>
+                  </div>
+                  <div class="window-body">
+                    <nav class="sidebar-nav">
+                      <span class="nav-chip active" aria-hidden="true">Appearance</span>
+                      <span class="nav-chip" aria-hidden="true">Shortcuts</span>
+                      <span class="nav-chip" aria-hidden="true">Display</span>
+                    </nav>
+                    <div class="surface-card">
+                      <h3>Accent preview</h3>
+                      <div class="slider-demo">
+                        <span>Transparency</span>
+                        <div class="slider-track">
+                          <div class="slider-thumb"></div>
+                        </div>
+                      </div>
+                      <div class="button-row">
+                        <span class="secondary" aria-hidden="true">Secondary</span>
+                        <span aria-hidden="true">Primary</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="widget-stack">
+                  <div class="terminal-card">
+                    <div class="terminal-header">konsole</div>
+                    <pre><code>$ sudo cachyos-theme apply
+Applying baseline palette...
+Reference snapshot ready.</code></pre>
+                  </div>
+
+                  <div class="notification-card">
+                    <p class="notification-title">Baseline snapshot</p>
+                    <p class="notification-body">
+                      Use this side to compare before and after theme changes.
+                    </p>
+                  </div>
+
+                  <div class="dock-card">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="active"></span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </article>
+
+          <article class="compare-pane">
+            <div class="compare-label">
+              <span id="compareAfterLabel">After</span>
+            </div>
+            <div class="desktop-canvas compare-canvas" id="currentCompareCanvas" aria-hidden="true">
+              <div class="top-bar">
+                <div class="brand-pill">
+                  <span class="brand-dot"></span>
+                  <span>Current Session</span>
+                </div>
+                <div class="top-icons">
+                  <span>NET</span>
+                  <span>VOL</span>
+                  <span>10:28</span>
+                </div>
+              </div>
+
+              <div class="desktop-grid">
+                <article class="window-card">
+                  <div class="window-titlebar">
+                    <span>Settings</span>
+                    <div class="window-actions">
+                      <i></i>
+                      <i></i>
+                      <i></i>
+                    </div>
+                  </div>
+                  <div class="window-body">
+                    <nav class="sidebar-nav">
+                      <span class="nav-chip active" aria-hidden="true">Appearance</span>
+                      <span class="nav-chip" aria-hidden="true">Shortcuts</span>
+                      <span class="nav-chip" aria-hidden="true">Display</span>
+                    </nav>
+                    <div class="surface-card">
+                      <h3>Accent preview</h3>
+                      <div class="slider-demo">
+                        <span>Transparency</span>
+                        <div class="slider-track">
+                          <div class="slider-thumb"></div>
+                        </div>
+                      </div>
+                      <div class="button-row">
+                        <span class="secondary" aria-hidden="true">Secondary</span>
+                        <span aria-hidden="true">Primary</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="widget-stack">
+                  <div class="terminal-card">
+                    <div class="terminal-header">konsole</div>
+                    <pre><code>$ sudo cachyos-theme apply
+Applying current palette...
+Preview ready.</code></pre>
+                  </div>
+
+                  <div class="notification-card">
+                    <p class="notification-title">Current snapshot</p>
+                    <p class="notification-body">
+                      Updated live as you change the theme editor values.
+                    </p>
+                  </div>
+
+                  <div class="dock-card">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="active"></span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./theme-studio/app.js"></script>
+  </body>
+</html>

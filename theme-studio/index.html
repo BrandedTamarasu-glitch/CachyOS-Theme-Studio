@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CachyOS Theme Studio</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="control-panel">
+        <div class="panel-header">
+          <p class="eyebrow">CachyOS Theme Studio</p>
+          <h1>Global theme engine prototype</h1>
+          <p class="lede">
+            Tune shared system colors and inspect the result immediately across
+            window chrome, widgets, terminal, and notifications.
+          </p>
+        </div>
+
+        <section class="panel-card">
+          <label class="field">
+            <span>Theme name</span>
+            <input id="themeName" type="text" value="Solar Drift" />
+          </label>
+
+          <label class="field">
+            <span>Preset</span>
+            <select id="presetSelect"></select>
+          </label>
+
+          <div class="button-row">
+            <button id="resetTheme" class="secondary">Reset</button>
+            <button id="randomizeTheme">Randomize</button>
+          </div>
+        </section>
+
+        <section class="panel-card">
+          <div class="section-title">
+            <h2>Color Tokens</h2>
+            <p>These map to the main visual surfaces a desktop theme needs.</p>
+          </div>
+
+          <div id="tokenFields" class="token-fields"></div>
+        </section>
+
+        <section class="panel-card">
+          <div class="section-title">
+            <h2>Desktop App</h2>
+            <p>
+              When running inside the desktop build, the app can detect your
+              session, install theme files, and try live activation.
+            </p>
+          </div>
+
+          <div id="desktopMode" class="desktop-mode">Web preview mode</div>
+
+          <div id="environmentSummary" class="environment-summary">
+            Launch the Tauri app to enable direct desktop integration.
+          </div>
+
+          <div class="button-row">
+            <button id="detectEnvironment" class="secondary">Detect Session</button>
+            <button id="installTheme" class="secondary">Install Files</button>
+            <button id="applyTheme">Apply Theme</button>
+          </div>
+
+          <pre id="desktopStatus" class="desktop-status">Desktop integration idle.</pre>
+        </section>
+
+        <section class="panel-card">
+          <div class="section-title">
+            <h2>Generator</h2>
+            <p>
+              Generate starter output for multiple theming targets from one
+              shared palette.
+            </p>
+          </div>
+
+          <label class="field">
+            <span>Output target</span>
+            <select id="outputTarget"></select>
+          </label>
+
+          <div id="outputHint" class="output-hint"></div>
+
+          <div class="button-row">
+            <button id="copyOutput" class="secondary">Copy Output</button>
+            <button id="downloadOutput">Download</button>
+          </div>
+
+          <textarea
+            id="exportOutput"
+            class="export-output"
+            spellcheck="false"
+            readonly
+          ></textarea>
+
+          <label class="field import-field">
+            <span>Import theme JSON</span>
+            <input id="importFile" type="file" accept="application/json,.json" />
+          </label>
+        </section>
+      </aside>
+
+      <main class="preview-panel">
+        <header class="preview-header">
+          <div>
+            <p class="eyebrow">Real-time demo</p>
+            <h2>Desktop preview</h2>
+          </div>
+          <div class="preview-badges">
+            <span>Shell</span>
+            <span>Widgets</span>
+            <span>Windows</span>
+          </div>
+        </header>
+
+        <section class="desktop-canvas" id="desktopCanvas">
+          <div class="top-bar">
+            <div class="brand-pill">
+              <span class="brand-dot"></span>
+              <span>CachyOS Session</span>
+            </div>
+            <div class="top-icons">
+              <span>NET</span>
+              <span>VOL</span>
+              <span>10:28</span>
+            </div>
+          </div>
+
+          <div class="desktop-grid">
+            <article class="window-card">
+              <div class="window-titlebar">
+                <span>Settings</span>
+                <div class="window-actions">
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                </div>
+              </div>
+              <div class="window-body">
+                <nav class="sidebar-nav">
+                  <button class="nav-chip active">Appearance</button>
+                  <button class="nav-chip">Shortcuts</button>
+                  <button class="nav-chip">Display</button>
+                </nav>
+                <div class="surface-card">
+                  <h3>Accent preview</h3>
+                  <div class="slider-demo">
+                    <span>Transparency</span>
+                    <div class="slider-track">
+                      <div class="slider-thumb"></div>
+                    </div>
+                  </div>
+                  <div class="button-row">
+                    <button class="secondary">Secondary</button>
+                    <button>Primary</button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="widget-stack">
+              <div class="terminal-card">
+                <div class="terminal-header">konsole</div>
+                <pre><code>$ sudo cachyos-theme apply
+Applying global palette...
+Accent bound to widgets.
+Preview ready.</code></pre>
+              </div>
+
+              <div class="notification-card">
+                <p class="notification-title">Theme compiled</p>
+                <p class="notification-body">
+                  Window borders, active elements, and shell chrome are synced.
+                </p>
+              </div>
+
+              <div class="dock-card">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="active"></span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "cachyos-theme-studio",
+  "version": "1.0.0",
+  "description": "Theme engine prototype for building global CachyOS themes with live previews",
+  "main": "server.mjs",
+  "bin": {
+    "cachyos-theme": "./cachyos-theme.mjs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "web:dev": "vite",
+    "web:build": "vite build",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
+    "desktop:test:smoke": "npm --prefix e2e-tests test",
+    "release:check": "./scripts/release-check.sh",
+    "theme:help": "node cachyos-theme.mjs --help",
+    "theme:preset": "node cachyos-theme.mjs preset \"Solar Drift\" --out ./solar-drift.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "openai": "^6.33.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "vite": "^7.0.0"
+  }
+}
