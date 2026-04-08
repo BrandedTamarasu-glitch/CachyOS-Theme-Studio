@@ -1,105 +1,142 @@
 # CachyOS Theme Studio
 
-Prototype desktop theme manager for CachyOS with a guided workflow, live previewing, desktop apply actions, and rollback safety.
+CachyOS Theme Studio is a desktop theme manager for CachyOS that turns theme creation into a guided workflow instead of a pile of config files.
 
-## What it does
+It gives you one place to:
 
-- Edit shared color tokens in a browser UI
-- Start from presets, the current desktop, saved themes, imports, or a wallpaper/image
-- Shape drafts with higher-level controls before dropping into raw token editing
-- See the palette applied immediately to a desktop-style preview
-- Review apply readiness, warnings, and recovery path before touching the live desktop
-- Save variants, compare snapshots, and recover from restore points
-- Switch between starter presets
-- Export the theme as JSON
-- Generate starter output for KDE Plasma, Kvantum, and GTK from the same palette
-- Import exported theme JSON back into the editor
+- build a theme from a preset, your current desktop, a saved theme, imported JSON, or a wallpaper/image
+- preview the result in a desktop-style canvas before touching the live system
+- review apply readiness, warnings, and recovery steps before installing
+- save snapshots, compare versions, and roll back when needed
+- generate shared output for Plasma, GTK, and Kvantum from the same palette
 
-## Run locally
+## Why this exists
 
-```bash
-npm run dev
-```
+Desktop theming on Linux is usually fragmented.
 
-Then open `http://127.0.0.1:1420`.
+You end up editing or generating multiple files, tracking which subsystem owns which colors, and hoping a live apply does not leave your desktop in a half-broken state. Theme Studio exists to make that process safer and easier to reason about.
+
+The goal is not just to export colors. The goal is to help you:
+
+- start quickly
+- make visual decisions with context
+- understand what will change before apply
+- keep restore points and saved variants
+- avoid breaking your working setup while experimenting
+
+## What the application does
+
+The current app includes:
+
+- a guided workflow: `Start Here -> Style -> Apply Review -> Save & Apply -> Library & History`
+- semantic theme controls for accent, mood, contrast, temperature, and bias
+- advanced token editing when exact values are needed
+- live desktop-style preview surfaces for windows, widgets, terminal, notifications, and readability
+- compare mode for baseline-vs-draft and saved-theme-vs-saved-theme review
+- wallpaper/image-seeded theme generation with live refinement controls
+- desktop environment detection from the Tauri app
+- direct install/apply flows for supported targets
+- integration health checks and targeted repair actions
+- saved theme snapshots, favorites, search, sort, variants, and restore points
+- rollback to the previous applied snapshot
+
+## What it manages
+
+Theme Studio currently generates and manages output for:
+
+- KDE Plasma color schemes
+- GTK 3 and GTK 4 managed import files
+- Kvantum theme config and selector files
+- Theme Studio snapshot metadata under the app config directory
 
 ## Desktop app
 
-The repo now includes a Tauri desktop shell:
+The project includes a Tauri desktop shell around the theme workflow.
 
-- Frontend entry: [`index.html`](/home/corye/openai-cli/index.html)
-- Browser/desktop controller: [`theme-studio/app.js`](/home/corye/openai-cli/theme-studio/app.js)
-- Tauri backend: [`src-tauri/src/main.rs`](/home/corye/openai-cli/src-tauri/src/main.rs)
+Main pieces:
 
-Desktop app capabilities now include:
+- frontend shell: `index.html`
+- app controller: `theme-studio/app.js`
+- shared theme logic: `theme-studio/theme-core.mjs`
+- styling: `theme-studio/styles.css`
+- Tauri backend: `src-tauri/src/main.rs`
 
-- Guided `Start -> Style -> Apply Review -> Save & Apply -> Library & History` workflow
-- Detecting the active desktop/session from the GUI
-- Installing and applying the current theme directly
-- Saving theme snapshots into the app library
-- Listing saved themes and recent applies
-- Comparing saved themes against the working draft or another saved theme
-- Wallpaper/image-seeded draft generation with live refinement controls
-- Rolling back to the previous applied theme from the GUI
+## Run locally
 
-Development commands:
+Browser development:
 
 ```bash
 npm run web:dev
+```
+
+Desktop development:
+
+```bash
 npm run desktop:dev
 ```
 
-Production commands:
+Production build:
 
 ```bash
-npm run web:build
 npm run desktop:build
 ```
 
-Release verification:
+## Verification
 
-- Checklist: [RELEASE_CHECKLIST.md](/home/corye/openai-cli/RELEASE_CHECKLIST.md)
-- Automated desktop smoke test: `ORIGINAL_HOME="$HOME" npm run desktop:test:smoke --prefix /home/corye/openai-cli`
-- One-shot release gate: `npm run release:check --prefix /home/corye/openai-cli`
-- Current release focus: guided workflow clarity, desktop safety, keyboard access, and smoke-tested library/apply flows
+Frontend build:
 
-## CLI workflow
+```bash
+npm run web:build
+```
 
-Export a preset as theme JSON:
+Desktop smoke test:
+
+```bash
+ORIGINAL_HOME="$HOME" npm run desktop:test:smoke --prefix /home/corye/openai-cli
+```
+
+One-shot release gate:
+
+```bash
+npm run release:check --prefix /home/corye/openai-cli
+```
+
+Release checklist:
+
+- see `RELEASE_CHECKLIST.md`
+
+## CLI support
+
+The repo also includes a CLI for generating and applying theme artifacts directly.
+
+Export a preset:
 
 ```bash
 node cachyos-theme.mjs preset "Solar Drift" --out ./solar-drift.json
 ```
 
-Build generated theme artifacts into `./dist`:
+Build artifacts:
 
 ```bash
 node cachyos-theme.mjs build ./solar-drift.json --out-dir ./dist
 ```
 
-Apply generated files into your user config directories:
+Dry-run or activate:
 
 ```bash
 node cachyos-theme.mjs apply ./solar-drift.json --dry-run
 node cachyos-theme.mjs apply ./solar-drift.json --activate
 ```
 
-`apply` writes and wires files in these locations:
+## Current status
 
-- `~/.local/share/color-schemes/<Theme>.colors`
-- `~/.config/Kvantum/<Theme>/<Theme>.kvconfig`
-- `~/.config/Kvantum/kvantum.kvconfig`
-- `~/.config/gtk-3.0/cachyos-theme.css`
-- `~/.config/gtk-3.0/gtk.css`
-- `~/.config/gtk-4.0/cachyos-theme.css`
-- `~/.config/gtk-4.0/gtk.css`
-- `~/.config/cachyos-theme-studio/themes/<Theme>/manifest.json`
+This is still a working prototype, but it is no longer just a visual mockup.
 
-## Current scope
+It now has:
 
-This is still a prototype, but it now has a usable local application path.
-The CLI can generate theme files, install them into common user-level locations,
-attempt live Plasma and Kvantum activation, and merge GTK imports into the
-standard per-user `gtk.css` entrypoints. The desktop app scaffold now wraps that
-workflow in a GUI, persists theme snapshots under `~/.config/cachyos-theme-studio/`,
-and exposes load/rollback flows inside the app.
+- a usable desktop application path
+- smoke-tested install, rollback, rename, delete, clear-history, and reset flows
+- documented release verification
+- accessibility and keyboard-focused UX improvements
+
+The next work is less about basic plumbing and more about continued product refinement.
