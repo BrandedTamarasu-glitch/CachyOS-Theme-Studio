@@ -1,6 +1,6 @@
 # CachyOS Theme Studio
 
-![CachyOS Theme Studio social preview](docs/social-preview.png)
+![CachyOS Theme Studio social preview](docs/social-preview-v2.png)
 
 CachyOS Theme Studio is a desktop theme manager for CachyOS that turns theme creation into a guided workflow instead of a pile of config files.
 
