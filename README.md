@@ -83,6 +83,14 @@ Production build:
 npm run desktop:build
 ```
 
+AppImage build on CachyOS/Arch:
+
+```bash
+npm run desktop:build:appimage
+```
+
+That path disables AppImage media-framework bundling and sets `NO_STRIP=true` to avoid `linuxdeploy` strip failures on newer system libraries that use `.relr.dyn`.
+
 ## Verification
 
 Frontend build:

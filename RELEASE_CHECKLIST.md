@@ -50,6 +50,17 @@ Expected result:
 - `cargo check` exits successfully
 - `npm run web:build` exits successfully
 
+If you are preparing an AppImage on CachyOS/Arch, use:
+
+```bash
+npm run desktop:build:appimage --prefix /home/corye/openai-cli
+```
+
+Why this path exists:
+
+- AppImage media-framework bundling is disabled because Theme Studio does not need the broad `linuxdeploy-plugin-gstreamer` sweep
+- `NO_STRIP=true` avoids `linuxdeploy` strip failures on newer system libraries that contain `.relr.dyn`
+
 ## 3. Run the automated desktop smoke test
 
 Run:
