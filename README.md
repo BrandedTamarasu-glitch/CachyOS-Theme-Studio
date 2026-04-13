@@ -90,6 +90,7 @@ npm run desktop:build:appimage
 ```
 
 That path disables AppImage media-framework bundling and sets `NO_STRIP=true` to avoid `linuxdeploy` strip failures on newer system libraries that use `.relr.dyn`.
+It also cleans the previous AppImage staging directory before packaging so stale AppStream metadata cannot break validation.
 
 ## Verification
 

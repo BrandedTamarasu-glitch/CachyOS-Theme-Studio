@@ -13,7 +13,7 @@
     "web:build": "vite build",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
-    "desktop:build:appimage": "NO_STRIP=true tauri build -b appimage",
+    "desktop:build:appimage": "./scripts/build-appimage.sh",
     "desktop:test:smoke": "npm --prefix e2e-tests test",
     "release:check": "./scripts/release-check.sh",
     "theme:help": "node cachyos-theme.mjs --help",

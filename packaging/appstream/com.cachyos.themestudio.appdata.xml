@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.cachyos.themestudio</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>ISC</project_license>
+  <name>CachyOS Theme Studio</name>
+  <summary>Guided desktop theme manager for CachyOS</summary>
+  <description>
+    <p>
+      CachyOS Theme Studio helps create, preview, apply, and roll back Linux desktop themes
+      from one guided workflow.
+    </p>
+    <p>
+      It generates coordinated theme output for KDE Plasma, GTK, and Kvantum, with live previews,
+      apply-readiness checks, saved snapshots, compare tools, and rollback safety.
+    </p>
+  </description>
+  <launchable type="desktop-id">com.cachyos.themestudio.desktop</launchable>
+  <categories>
+    <category>Settings</category>
+    <category>DesktopSettings</category>
+  </categories>
+  <url type="homepage">https://github.com/BrandedTamarasu-glitch/CachyOS-Theme-Studio</url>
+  <releases>
+    <release version="1.0.0" date="2026-04-13">
+      <description>
+        <p>Initial packaged release with guided workflow, desktop integration, and release checks.</p>
+      </description>
+    </release>
+  </releases>
+</component>

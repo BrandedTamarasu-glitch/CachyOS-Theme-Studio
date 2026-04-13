@@ -60,6 +60,7 @@ Why this path exists:
 
 - AppImage media-framework bundling is disabled because Theme Studio does not need the broad `linuxdeploy-plugin-gstreamer` sweep
 - `NO_STRIP=true` avoids `linuxdeploy` strip failures on newer system libraries that contain `.relr.dyn`
+- the AppImage staging directory is cleaned before packaging so stale AppStream metadata cannot break validation
 
 ## 3. Run the automated desktop smoke test
 
