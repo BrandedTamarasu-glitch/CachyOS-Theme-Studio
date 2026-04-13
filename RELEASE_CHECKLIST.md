@@ -17,6 +17,12 @@ npm run release:check --prefix /home/corye/openai-cli
 
 This runs the build checks and the automated desktop smoke test in order.
 
+GitHub automation:
+
+- `.github/workflows/ci.yml` runs fast build checks on pushes and pull requests.
+- `.github/workflows/release-artifacts.yml` builds `.deb`, `.rpm`, and `.AppImage` artifacts on `v*` tags or manual dispatch.
+- The local `release:check` remains required before shipping because the desktop smoke test depends on the local Tauri/WebKit/KDE test setup.
+
 ## 1. Verify toolchain and system prerequisites
 
 Required for the automated desktop smoke test on Linux:

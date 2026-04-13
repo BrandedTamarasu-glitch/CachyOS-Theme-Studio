@@ -94,6 +94,11 @@ It also cleans the previous AppImage staging directory before packaging so stale
 
 ## Verification
 
+GitHub Actions runs fast build checks for pushes and pull requests:
+
+- Tauri backend check with `cargo check`
+- production frontend build with `npm run web:build`
+
 Frontend build:
 
 ```bash
@@ -111,6 +116,10 @@ One-shot release gate:
 ```bash
 npm run release:check --prefix /home/corye/openai-cli
 ```
+
+Use the local release gate before shipping desktop builds. It includes the WebDriver desktop smoke test, which intentionally stays local because it depends on the machine's Tauri/WebKit/KDE test setup.
+
+Tagged releases and manual release artifact runs are handled by GitHub Actions. The release artifact workflow builds `.deb`, `.rpm`, and `.AppImage` packages, uploads them as workflow artifacts, and creates or updates the matching GitHub release.
 
 Release checklist:
 
